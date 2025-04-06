@@ -1,5 +1,9 @@
 # Text Classification Tool
 
+## Beta Version available at (limited to file <= 30KB):
+
+https://classifyit.netlify.app/
+
 ## Description
 
 A web application that allows users to upload a CSV/Excel file, define custom labels along with their descriptions, then a classified version of the file will be downloaded locally after submission.
