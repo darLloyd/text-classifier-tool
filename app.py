@@ -4,10 +4,10 @@ import io
 import json
 import re
 import pandas as pd
-from flask import Flask, request, jsonify, Response, make_response # Added make_response
+from flask import Flask, request, jsonify, Response, make_response
 from flask_cors import CORS
-from flask_limiter import Limiter # Import Limiter
-from flask_limiter.util import get_remote_address # Import strategy
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 import openai
 
@@ -18,22 +18,20 @@ print("Attempted to load environment variables from .env")
 app = Flask(__name__)
 
 # --- Configuration ---
-# File Size Limit (50 KB = 50 * 1024 bytes)
-# Flask will automatically return 413 if request body is larger
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024
-print(f"MAX_CONTENT_LENGTH set to {app.config['MAX_CONTENT_LENGTH']} bytes")
+# ** UPDATED File Size Limit (30 KB = 30 * 1024 bytes) **
+app.config['MAX_CONTENT_LENGTH'] = 30 * 1024
+print(f"MAX_CONTENT_LENGTH set to {app.config['MAX_CONTENT_LENGTH']} bytes ({app.config['MAX_CONTENT_LENGTH']/1024:.0f} KB)")
 
 # CORS Configuration
 CORS(app)
 print("Flask-CORS initialized.")
 
-# --- Rate Limiter Configuration ---
+# --- Rate Limiter Configuration --- (Same as before)
 limiter = Limiter(
-    get_remote_address, # Strategy: limit based on visitor's IP address
+    get_remote_address,
     app=app,
-    default_limits=["100 per day", "20 per hour"], # Default limits for all routes (optional)
-    storage_uri="memory://", # Use in-memory storage (suitable for single-process dev/simple deployments)
-    # For more robust deployments, consider Redis: "redis://localhost:6379" etc.
+    default_limits=["100 per day", "20 per hour"],
+    storage_uri="memory://",
 )
 print("Flask-Limiter initialized.")
 
@@ -52,11 +50,12 @@ else: print("\n*** WARNING: OpenAI library not imported. ***\n")
 @app.errorhandler(413)
 def request_entity_too_large(error):
     """ Custom JSON response for file size limit exceeded. """
-    print(f"Error 413: Request entity too large (likely file size exceeded {app.config['MAX_CONTENT_LENGTH']} bytes).")
-    return jsonify(error=f"File size exceeds limit ({app.config['MAX_CONTENT_LENGTH']/1024:.0f} KB). Please upload a smaller file."), 413
+    # ** UPDATED error message to reflect 30KB limit **
+    limit_kb = app.config['MAX_CONTENT_LENGTH']/1024
+    print(f"Error 413: Request entity too large (limit: {limit_kb:.0f} KB).")
+    return jsonify(error=f"File size exceeds limit ({limit_kb:.0f} KB). Please upload a smaller file."), 413
 
-# --- Custom Error Handler for 429 Rate Limit Exceeded ---
-# Note: Flask-Limiter automatically returns a 429 response, but we can customize it
+# --- Custom Error Handler for 429 Rate Limit Exceeded --- (Same as before)
 @app.errorhandler(429)
 def ratelimit_handler(e):
     """ Custom JSON response for rate limit exceeded. """
@@ -65,7 +64,7 @@ def ratelimit_handler(e):
 
 
 # --- LLM Classification Function (classify_text_with_llm) ---
-# ... (This function remains exactly the same as in backend_code_v3_openai) ...
+# ... (This function remains exactly the same as in backend_code_v5_limits / v3_openai) ...
 def classify_text_with_llm(text_to_classify, categories):
     if not openai_client: return {"label": "error", "justification": "OpenAI client not available."}
     if not text_to_classify: return {"label": "no category", "justification": "Input text was empty."}
@@ -105,17 +104,13 @@ Justification: <Your brief explanation>
 
 
 # --- API Endpoint for Classification ---
+# ... (Decorator includes rate limit: @limiter.limit("3 per hour")) ...
 @app.route('/classify', methods=['POST'])
-@limiter.limit("3 per hour") # Apply rate limit specifically to this endpoint
+@limiter.limit("3 per hour")
 def classify_csv():
-    """
-    Handles POST request to classify text in uploaded CSV or Excel file.
-    Includes file size check (via Flask config) and rate limiting.
-    """
+    # ... (Rest of the function is identical to backend_code_v5_limits) ...
     print("\n=== Received request on /classify ===")
-    # File size is checked automatically by Flask via MAX_CONTENT_LENGTH before this function runs
-
-    # 1. --- Input Validation --- (Same as before)
+    # 1. --- Input Validation ---
     if 'csv_file' not in request.files: return jsonify({"error": "No file part"}), 400
     file = request.files['csv_file']
     if file.filename == '': return jsonify({"error": "No selected file"}), 400
@@ -132,7 +127,7 @@ def classify_csv():
         print(f"Received {len(categories_list)} valid categories.")
     except (json.JSONDecodeError, ValueError) as e: return jsonify({"error": f"Invalid categories format: {e}"}), 400
 
-    # 2. --- File Parsing (CSV or Excel) --- (Same as backend_code_v4_excel)
+    # 2. --- File Parsing (CSV or Excel) ---
     filename = file.filename; df = None; print(f"Parsing file: {filename}")
     try:
         if filename.lower().endswith('.csv'):
@@ -154,7 +149,7 @@ def classify_csv():
     except ImportError: return jsonify({"error": "Need 'openpyxl' for Excel. `pip install openpyxl`."}), 500
     except Exception as e: print(f"Error parsing file: {e}"); return jsonify({"error": f"Error reading file: {e}"}), 400
 
-    # 3. --- Processing Loop & LLM Calls --- (Same as before)
+    # 3. --- Processing Loop & LLM Calls ---
     results_labels = []; results_justifications = []; row_count = 0
     if df.empty: print("DataFrame empty. Skipping processing.")
     else:
@@ -170,7 +165,7 @@ def classify_csv():
         print("Finished OpenAI classification processing.")
     df['Assigned Category'] = results_labels; df['Justification'] = results_justifications
 
-    # 4. --- Generate Output CSV --- (Same as before)
+    # 4. --- Generate Output CSV ---
     try:
         output_csv_stream = io.StringIO();
         if 'Assigned Category' not in df.columns: df['Assigned Category'] = []
@@ -178,7 +173,7 @@ def classify_csv():
         df.to_csv(output_csv_stream, index=False, encoding='utf-8'); csv_data = output_csv_stream.getvalue(); output_csv_stream.close(); print("Generated output CSV.")
     except Exception as e: print(f"Error generating output CSV: {e}"); return jsonify({"error": f"Failed to generate output CSV: {e}"}), 500
 
-    # 5. --- Return CSV Response --- (Same as before)
+    # 5. --- Return CSV Response ---
     print("Sending CSV response.")
     return Response( csv_data, mimetype="text/csv", headers={ "Content-Disposition": "attachment;filename=classified_output.csv", "Content-Type": "text/csv; charset=utf-8" } )
 
@@ -189,6 +184,5 @@ def index(): return "Backend server running: OpenAI + CSV/Excel + Limits!"
 # Main execution block (Same)
 if __name__ == '__main__':
     if not openai_client: print("\n--- NOTE: Server starting, OpenAI client not configured. '/classify' will fail. ---\n")
-    # Use Gunicorn in production, but Flask dev server is fine for local testing
-    # For Render, the start command will use Gunicorn.
-    app.run(debug=True, port=5000) # Use debug=False when deploying
+    app.run(debug=True, port=5000)
+
