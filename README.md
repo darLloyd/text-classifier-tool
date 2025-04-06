@@ -1,8 +1,12 @@
 # Text Classification Tool
 
+## Beta Version available at (limited to file <= 30KB):
+
+https://classifyit.netlify.app/
+
 ## Description
 
-A web application that allows users to upload a CSV or Excel file, define custom text classification categories with descriptions, and receive a classified version of the file using an LLM backend (OpenAI GPT-4o Mini).
+A web application that allows users to upload a CSV/Excel file, define custom labels along with their descriptions, then a classified version of the file will be downloaded locally after submission.
 
 ## Features
 
