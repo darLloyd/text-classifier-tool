@@ -2,7 +2,7 @@
 
 ## Description
 
-A web application that allows users to upload a CSV/Excel file, define custom labels along with their descriptions, then a classified version of the file will be downloaded locally after submission using an LLM backend (OpenAI GPT-4o Mini).
+A web application that allows users to upload a CSV/Excel file, define custom labels along with their descriptions, then a classified version of the file will be downloaded locally after submission.
 
 ## Features
 
