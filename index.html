@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- Styles (Mostly same as enhanced_frontend_v7_limits) --- */
+        /* --- Styles (Mostly same as enhanced_frontend_v10_label_update2) --- */
         :root {
             --primary-color: #007bff; --primary-hover: #0056b3; --secondary-color: #6c757d; --secondary-hover: #5a6268;
             --danger-color: #dc3545; --danger-hover: #c82333; --success-color: #28a745; --success-hover: #218838;
@@ -17,8 +17,8 @@
             --light-gray: #f8f9fa; --medium-gray: #dee2e6; --dark-gray: #6c757d; --text-color: #212529;
             --border-radius: 6px; --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        body { font-family: 'Inter', sans-serif; background-color: #eef2f7; color: var(--text-color); margin: 0; padding: 20px; line-height: 1.6; }
-        .container { max-width: 800px; margin: 20px auto; background-color: #ffffff; padding: 30px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
+        body { font-family: 'Inter', sans-serif; background-color: #eef2f7; color: var(--text-color); margin: 0; padding: 20px; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; } /* Added flex for footer */
+        .container { max-width: 800px; margin: 20px auto; background-color: #ffffff; padding: 30px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); flex-grow: 1; /* Allow container to grow */ }
         h1, h2 { color: var(--primary-color); margin-bottom: 0.75em; border-bottom: 1px solid var(--medium-gray); padding-bottom: 0.5em; }
         h1 { text-align: center; border-bottom: none; margin-bottom: 1.2em; }
         h2 { font-size: 1.5em; color: var(--text-color); }
@@ -48,13 +48,8 @@
         .custom-file-upload { border: 1px solid var(--primary-color); display: inline-block; padding: 8px 15px; cursor: pointer; background-color: white; color: var(--primary-color); border-radius: var(--border-radius); transition: background-color 0.2s ease, color 0.2s ease; font-weight: 500; margin-right: 10px; }
         .custom-file-upload:hover { background-color: var(--primary-color); color: white; }
         #file-name-display { color: var(--dark-gray); font-size: 0.9rem; margin-top: 5px; display: inline-block; margin-right: 5px;}
-        /* Style for the clear file button */
-        #clear-file-btn {
-            background: none; border: none; color: var(--danger-color); cursor: pointer;
-            font-size: 1.2rem; padding: 0 5px; vertical-align: middle; display: none; /* Hidden by default */
-        }
+        #clear-file-btn { background: none; border: none; color: var(--danger-color); cursor: pointer; font-size: 1.2rem; padding: 0 5px; vertical-align: middle; display: none; }
         #clear-file-btn:hover { color: var(--danger-hover); }
-
         .category-controls { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--light-gray); }
         #category-list { margin-top: 15px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
         .category-item { display: flex; align-items: flex-start; gap: 15px; padding: 15px; border: 1px solid var(--medium-gray); border-radius: var(--border-radius); background-color: var(--light-gray); }
@@ -67,6 +62,23 @@
         #status-area .success-message { color: var(--success-color); font-weight: 500; }
         #status-area .info-message { color: var(--info-color); font-weight: 500; }
         #status-area .warning-message { color: var(--warning-dark); font-weight: 500; }
+
+        /* --- Footer Styling --- */
+        footer {
+            text-align: center;
+            margin-top: 30px; /* Space above footer */
+            padding: 15px;
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
@@ -119,189 +131,93 @@
 
         </form>
 
-    </div> <script>
+    </div> <footer>
+        <p>
+            If you like this tool and would like to know more, feel free to email me at
+            <a href="mailto:lloyddarnel@gmail.com">lloyddarnel@gmail.com</a>.
+        </p>
+    </footer>
+
+    <script>
+        // --- JavaScript (Identical to enhanced_frontend_v8_final_ux) ---
+        // No changes needed in JS for adding the footer text
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Constants (same as before) ---
+            // --- Constants ---
             const MAX_CATEGORIES = 10; const MAX_LABEL_LENGTH = 50; const MAX_DESC_LENGTH = 300;
             const CATEGORIES_STORAGE_KEY = 'textClassifierUserCategories';
             const ALLOWED_LABEL_REGEX = /^[a-zA-Z0-9\s_]*$/; const DISALLOWED_LABEL_REGEX = /[^a-zA-Z0-9\s_]/g;
             let statusClearTimeout = null;
 
             // --- DOM Element References ---
-            // ... (Add clear file button and column counter)
             const form = document.getElementById('classification-form'); const csvFileInput = document.getElementById('csv-file');
             const fileNameDisplay = document.getElementById('file-name-display'); const textColumnInput = document.getElementById('text-column');
             const categoryListDiv = document.getElementById('category-list'); const addCategoryBtn = document.getElementById('add-category-btn');
             const saveCategoriesBtn = document.getElementById('save-categories-btn'); const loadCategoriesBtn = document.getElementById('load-categories-btn');
             const submitBtn = document.getElementById('submit-btn'); const statusMessage = document.getElementById('status-message');
             const loadingIndicator = document.getElementById('loading-indicator');
-            const clearFileBtn = document.getElementById('clear-file-btn'); // New
-            const columnCharCounter = document.getElementById('char-counter-column'); // New
+            const clearFileBtn = document.getElementById('clear-file-btn'); const columnCharCounter = document.getElementById('char-counter-column');
 
             // --- Event Listeners ---
-            csvFileInput.addEventListener('change', handleFileSelect);
-            clearFileBtn.addEventListener('click', handleClearFile); // New
-            addCategoryBtn.addEventListener('click', handleAddCategoryClick);
-            saveCategoriesBtn.addEventListener('click', saveCategories);
-            loadCategoriesBtn.addEventListener('click', loadCategories);
-            form.addEventListener('submit', handleFormSubmit);
-            categoryListDiv.addEventListener('click', handleCategoryListClick);
-            categoryListDiv.addEventListener('input', handleCategoryInput);
-            textColumnInput.addEventListener('input', handleColumnInput); // New listener for column input validation/counter
+            csvFileInput.addEventListener('change', handleFileSelect); clearFileBtn.addEventListener('click', handleClearFile);
+            addCategoryBtn.addEventListener('click', handleAddCategoryClick); saveCategoriesBtn.addEventListener('click', saveCategories);
+            loadCategoriesBtn.addEventListener('click', loadCategories); form.addEventListener('submit', handleFormSubmit);
+            categoryListDiv.addEventListener('click', handleCategoryListClick); categoryListDiv.addEventListener('input', handleCategoryInput);
+            textColumnInput.addEventListener('input', handleColumnInput);
 
             // --- Core Functions ---
-
-            function handleFileSelect() {
-                 if (csvFileInput.files.length > 0) {
-                     fileNameDisplay.textContent = `${csvFileInput.files[0].name}`;
-                     clearFileBtn.style.display = 'inline'; // Show clear button
-                 } else {
-                     fileNameDisplay.textContent = 'No file selected.';
-                     clearFileBtn.style.display = 'none'; // Hide clear button
-                 }
-             }
-
-            function handleClearFile() {
-                 csvFileInput.value = ''; // Clear the file input
-                 // Manually trigger the change event to update display and hide button
-                 handleFileSelect();
-                 // Or: csvFileInput.dispatchEvent(new Event('change'));
-                 updateStatus('File selection cleared.', false, 'info-message', 3000);
-             }
-
-            function handleAddCategoryClick() { /* ... (same as before) ... */
-                  const currentCount = categoryListDiv.querySelectorAll('.category-item').length;
-                  if (currentCount >= MAX_CATEGORIES) { updateStatus(`Cannot add more than ${MAX_CATEGORIES} categories.`, false, 'warning-message'); }
-                  else { addCategoryRow(); checkCategoryLimit(); }
-              }
-
-            function handleCategoryListClick(event) { /* ... (same as before) ... */
-                  if (event.target.classList.contains('remove-category-btn')) { event.target.closest('.category-item').remove(); checkCategoryLimit(); }
-              }
-
-            // Combined input handler for category fields
+            function handleFileSelect() { if (csvFileInput.files.length > 0) { fileNameDisplay.textContent = `${csvFileInput.files[0].name}`; clearFileBtn.style.display = 'inline'; } else { fileNameDisplay.textContent = 'No file selected.'; clearFileBtn.style.display = 'none'; } }
+            function handleClearFile() { csvFileInput.value = ''; handleFileSelect(); updateStatus('File selection cleared.', false, 'info-message', 3000); }
+            function handleAddCategoryClick() { const currentCount = categoryListDiv.querySelectorAll('.category-item').length; if (currentCount >= MAX_CATEGORIES) { updateStatus(`Cannot add more than ${MAX_CATEGORIES} categories.`, false, 'warning-message'); } else { addCategoryRow(); checkCategoryLimit(); } }
+            function handleCategoryListClick(event) { if (event.target.classList.contains('remove-category-btn')) { event.target.closest('.category-item').remove(); checkCategoryLimit(); } }
             function handleCategoryInput(event) {
-                 const input = event.target;
-                 let maxLength = 0;
-                 let counterSpan = null;
-
+                 const input = event.target; let maxLength = 0; let counterSpan = null;
                  if (input.classList.contains('category-label')) {
-                     maxLength = MAX_LABEL_LENGTH;
-                     counterSpan = input.closest('.input-group').querySelector('.char-counter-label');
-                     // Label Specific Validation
-                     const originalValue = input.value;
-                     const sanitizedValue = originalValue.replace(DISALLOWED_LABEL_REGEX, '');
-                     if (originalValue !== sanitizedValue) {
-                          input.value = sanitizedValue;
-                          updateStatus('Special characters removed (only letters, numbers, spaces, _ allowed).', false, 'warning-message', 3000);
-                     }
+                     maxLength = MAX_LABEL_LENGTH; counterSpan = input.closest('.input-group').querySelector('.char-counter-label');
+                     const originalValue = input.value; const sanitizedValue = originalValue.replace(DISALLOWED_LABEL_REGEX, '');
+                     if (originalValue !== sanitizedValue) { input.value = sanitizedValue; updateStatus('Special characters removed (only letters, numbers, spaces, _ allowed).', false, 'warning-message', 3000); }
                      if (input.value.length > maxLength) { input.value = input.value.slice(0, maxLength); }
-
                  } else if (input.classList.contains('category-description')) {
-                     maxLength = MAX_DESC_LENGTH;
-                     counterSpan = input.closest('.input-group').querySelector('.char-counter-desc');
+                     maxLength = MAX_DESC_LENGTH; counterSpan = input.closest('.input-group').querySelector('.char-counter-desc');
                      if (input.value.length > maxLength) { input.value = input.value.slice(0, maxLength); }
-                 }
-                 updateCounter(input, counterSpan, maxLength); // Use helper
+                 } updateCounter(input, counterSpan, maxLength);
             }
-
-            // Separate handler for column input
             function handleColumnInput() {
-                 const input = textColumnInput;
-                 const maxLength = MAX_LABEL_LENGTH; // Use same length as label
-                 const counterSpan = columnCharCounter;
-
-                 // Validation (same as label)
-                 const originalValue = input.value;
-                 const sanitizedValue = originalValue.replace(DISALLOWED_LABEL_REGEX, '');
-                 if (originalValue !== sanitizedValue) {
-                      input.value = sanitizedValue;
-                      updateStatus('Special characters removed from column name (only letters, numbers, spaces, _ allowed).', false, 'warning-message', 3000);
-                 }
+                 const input = textColumnInput; const maxLength = MAX_LABEL_LENGTH; const counterSpan = columnCharCounter;
+                 const originalValue = input.value; const sanitizedValue = originalValue.replace(DISALLOWED_LABEL_REGEX, '');
+                 if (originalValue !== sanitizedValue) { input.value = sanitizedValue; updateStatus('Special characters removed from column name (only letters, numbers, spaces, _ allowed).', false, 'warning-message', 3000); }
                  if (input.value.length > maxLength) { input.value = input.value.slice(0, maxLength); }
-
-                 updateCounter(input, counterSpan, maxLength); // Use helper
+                 updateCounter(input, counterSpan, maxLength);
             }
-
-            // Helper to update character counters
-            function updateCounter(inputElement, counterElement, maxLength) {
-                 if (counterElement && maxLength > 0) {
-                     const currentLength = inputElement.value.length;
-                     counterElement.textContent = `${currentLength}/${maxLength}`;
-                     counterElement.classList.toggle('warning', currentLength >= maxLength * 0.9);
-                 }
+            function updateCounter(inputElement, counterElement, maxLength) { if (counterElement && maxLength > 0) { const currentLength = inputElement.value.length; counterElement.textContent = `${currentLength}/${maxLength}`; counterElement.classList.toggle('warning', currentLength >= maxLength * 0.9); } }
+            function checkCategoryLimit() { const currentCount = categoryListDiv.querySelectorAll('.category-item').length; addCategoryBtn.disabled = currentCount >= MAX_CATEGORIES; addCategoryBtn.title = addCategoryBtn.disabled ? `Maximum ${MAX_CATEGORIES} categories reached.` : ''; }
+            function addCategoryRow(label = '', description = '') {
+                 const div = document.createElement('div'); div.className = 'category-item'; const initialLabelLength = label.length; const initialDescLength = description.length;
+                 div.innerHTML = ` <div class="input-group"> <input type="text" class="category-label" placeholder="Category Label" required maxlength="${MAX_LABEL_LENGTH}" value="${escapeHtml(label)}"> <span class="char-counter char-counter-label ${initialLabelLength >= MAX_LABEL_LENGTH * 0.9 ? 'warning' : ''}">${initialLabelLength}/${MAX_LABEL_LENGTH}</span> <textarea class="category-description" placeholder="Description" required maxlength="${MAX_DESC_LENGTH}">${escapeHtml(description)}</textarea> <span class="char-counter char-counter-desc ${initialDescLength >= MAX_DESC_LENGTH * 0.9 ? 'warning' : ''}">${initialDescLength}/${MAX_DESC_LENGTH}</span> </div> <button type="button" class="remove-category-btn">Remove</button> `;
+                 categoryListDiv.appendChild(div);
             }
-
-
-            function checkCategoryLimit() { /* ... (same as before) ... */
-                   const currentCount = categoryListDiv.querySelectorAll('.category-item').length;
-                   addCategoryBtn.disabled = currentCount >= MAX_CATEGORIES;
-                   addCategoryBtn.title = addCategoryBtn.disabled ? `Maximum ${MAX_CATEGORIES} categories reached.` : '';
-              }
-
-            function addCategoryRow(label = '', description = '') { /* ... (same as before - includes counters) ... */
-                  const div = document.createElement('div'); div.className = 'category-item';
-                  const initialLabelLength = label.length; const initialDescLength = description.length;
-                  div.innerHTML = ` <div class="input-group"> <input type="text" class="category-label" placeholder="Category Label" required maxlength="${MAX_LABEL_LENGTH}" value="${escapeHtml(label)}"> <span class="char-counter char-counter-label ${initialLabelLength >= MAX_LABEL_LENGTH * 0.9 ? 'warning' : ''}">${initialLabelLength}/${MAX_LABEL_LENGTH}</span> <textarea class="category-description" placeholder="Description" required maxlength="${MAX_DESC_LENGTH}">${escapeHtml(description)}</textarea> <span class="char-counter char-counter-desc ${initialDescLength >= MAX_DESC_LENGTH * 0.9 ? 'warning' : ''}">${initialDescLength}/${MAX_DESC_LENGTH}</span> </div> <button type="button" class="remove-category-btn">Remove</button> `;
-                  categoryListDiv.appendChild(div);
-              }
-
-            function getCategoriesFromDOM(validate = false) { /* ... (same as before) ... */
-                  const categories = []; const categoryItems = categoryListDiv.querySelectorAll('.category-item'); let isValid = true;
-                  categoryItems.forEach(item => { const labelInput = item.querySelector('.category-label'); const descriptionInput = item.querySelector('.category-description'); let currentLabel = ''; let currentDesc = ''; if (labelInput) labelInput.classList.remove('invalid'); if (descriptionInput) descriptionInput.classList.remove('invalid'); if (labelInput) { currentLabel = labelInput.value; if (validate && (!currentLabel.trim() || currentLabel.length > MAX_LABEL_LENGTH || !ALLOWED_LABEL_REGEX.test(currentLabel))) { isValid = false; labelInput.classList.add('invalid'); } } else if (validate) isValid = false; if (descriptionInput) { currentDesc = descriptionInput.value; if (validate && (!currentDesc.trim() || currentDesc.length > MAX_DESC_LENGTH)) { isValid = false; descriptionInput.classList.add('invalid'); } } else if (validate) isValid = false; categories.push({ label: currentLabel, description: currentDesc }); }); return { categories, isValid };
-              }
-
-            function saveCategories() { /* ... (same as before) ... */
-                  const { categories } = getCategoriesFromDOM(false); if (categories.length === 0) { updateStatus("Add at least one category to save.", false, 'info-message'); return; } try { localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(categories)); updateStatus("Categories saved successfully.", false, 'success-message', 3000); } catch (e) { console.error("Error saving categories:", e); updateStatus("Error saving categories.", true); }
-              }
-
-            function loadCategories() { /* ... (same as before) ... */
-                  try { const storedCategories = localStorage.getItem(CATEGORIES_STORAGE_KEY); if (storedCategories) { const categories = JSON.parse(storedCategories); if (categories && Array.isArray(categories)) { categoryListDiv.innerHTML = ''; const categoriesToLoad = categories.slice(0, MAX_CATEGORIES); categoriesToLoad.forEach(cat => { if (cat && typeof cat.label === 'string' && typeof cat.description === 'string') { const label = cat.label.replace(DISALLOWED_LABEL_REGEX, '').slice(0, MAX_LABEL_LENGTH); const description = cat.description.slice(0, MAX_DESC_LENGTH); addCategoryRow(label, description); } }); if (categoriesToLoad.length > 0) { let msg = `Loaded ${categoriesToLoad.length} categories.`; if(categories.length > MAX_CATEGORIES) msg += ` ${categories.length - MAX_CATEGORIES} saved categories ignored (limit ${MAX_CATEGORIES}).`; updateStatus(msg, false, categories.length > MAX_CATEGORIES ? 'warning-message' : 'success-message', 4000); } else { handleLoadError("No valid categories found in storage."); return; } } else { handleLoadError("Found invalid category data in storage."); return; } } else { updateStatus("No saved categories found.", false, 'info-message', 3000); } } catch (e) { console.error("Error loading categories:", e); handleLoadError("Error loading categories."); return; } finally { if (categoryListDiv.children.length === 0) { addCategoryRow(); } checkCategoryLimit(); }
-              }
-
-             function handleLoadError(message) { /* ... (same as before) ... */ updateStatus(message, true); localStorage.removeItem(CATEGORIES_STORAGE_KEY); categoryListDiv.innerHTML = ''; addCategoryRow(); }
-
+            function getCategoriesFromDOM(validate = false) {
+                const categories = []; const categoryItems = categoryListDiv.querySelectorAll('.category-item'); let isValid = true;
+                categoryItems.forEach(item => { const labelInput = item.querySelector('.category-label'); const descriptionInput = item.querySelector('.category-description'); let currentLabel = ''; let currentDesc = ''; if (labelInput) labelInput.classList.remove('invalid'); if (descriptionInput) descriptionInput.classList.remove('invalid'); if (labelInput) { currentLabel = labelInput.value; if (validate && (!currentLabel.trim() || currentLabel.length > MAX_LABEL_LENGTH || !ALLOWED_LABEL_REGEX.test(currentLabel))) { isValid = false; labelInput.classList.add('invalid'); } } else if (validate) isValid = false; if (descriptionInput) { currentDesc = descriptionInput.value; if (validate && (!currentDesc.trim() || currentDesc.length > MAX_DESC_LENGTH)) { isValid = false; descriptionInput.classList.add('invalid'); } } else if (validate) isValid = false; categories.push({ label: currentLabel, description: currentDesc }); }); return { categories, isValid };
+            }
+            function saveCategories() { const { categories } = getCategoriesFromDOM(false); if (categories.length === 0) { updateStatus("Add at least one category to save.", false, 'info-message'); return; } try { localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(categories)); updateStatus("Categories saved successfully.", false, 'success-message', 3000); } catch (e) { console.error("Error saving categories:", e); updateStatus("Error saving categories.", true); } }
+            function loadCategories() { try { const storedCategories = localStorage.getItem(CATEGORIES_STORAGE_KEY); if (storedCategories) { const categories = JSON.parse(storedCategories); if (categories && Array.isArray(categories)) { categoryListDiv.innerHTML = ''; const categoriesToLoad = categories.slice(0, MAX_CATEGORIES); categoriesToLoad.forEach(cat => { if (cat && typeof cat.label === 'string' && typeof cat.description === 'string') { const label = cat.label.replace(DISALLOWED_LABEL_REGEX, '').slice(0, MAX_LABEL_LENGTH); const description = cat.description.slice(0, MAX_DESC_LENGTH); addCategoryRow(label, description); } }); if (categoriesToLoad.length > 0) { let msg = `Loaded ${categoriesToLoad.length} categories.`; if(categories.length > MAX_CATEGORIES) msg += ` ${categories.length - MAX_CATEGORIES} saved categories ignored (limit ${MAX_CATEGORIES}).`; updateStatus(msg, false, categories.length > MAX_CATEGORIES ? 'warning-message' : 'success-message', 4000); } else { handleLoadError("No valid categories found in storage."); return; } } else { handleLoadError("Found invalid category data in storage."); return; } } else { updateStatus("No saved categories found.", false, 'info-message', 3000); } } catch (e) { console.error("Error loading categories:", e); handleLoadError("Error loading categories."); return; } finally { if (categoryListDiv.children.length === 0) { addCategoryRow(); } checkCategoryLimit(); } }
+            function handleLoadError(message) { updateStatus(message, true); localStorage.removeItem(CATEGORIES_STORAGE_KEY); categoryListDiv.innerHTML = ''; addCategoryRow(); }
             async function handleFormSubmit(event) {
-                 event.preventDefault();
-                 // --- Combined Validation ---
-                 let formIsValid = true;
-                 // File
+                 event.preventDefault(); let formIsValid = true;
                  if (!csvFileInput.files[0]) { updateStatus('Please select a CSV or Excel file.', true); formIsValid = false; }
-                 // Column Name
-                 const columnName = textColumnInput.value;
-                 textColumnInput.classList.remove('invalid'); // Reset visual state
-                 if (!columnName.trim() || columnName.length > MAX_LABEL_LENGTH || !ALLOWED_LABEL_REGEX.test(columnName)) {
-                      updateStatus('Please enter a valid column name (max 50 chars, letters/numbers/spaces/_ only).', true);
-                      textColumnInput.classList.add('invalid'); // Show invalid state
-                      formIsValid = false;
-                 }
-                 // Categories
-                 const { categories, isValid: categoriesAreValid } = getCategoriesFromDOM(true);
-                 if (categoryListDiv.querySelectorAll('.category-item').length === 0) { updateStatus('Please define at least one category.', true); formIsValid = false; }
-                 else if (!categoriesAreValid) { updateStatus('Please fix the errors in category definitions.', true); formIsValid = false; } // getCategoriesFromDOM already adds .invalid class
-
-                 if (!formIsValid) return; // Stop if any validation failed
-
-                 // --- Gather Validated Data ---
-                 const validCategories = categories.filter(cat => cat.label.trim() && cat.label.length <= MAX_LABEL_LENGTH && ALLOWED_LABEL_REGEX.test(cat.label) && cat.description.trim() && cat.description.length <= MAX_DESC_LENGTH );
-                 if(validCategories.length === 0) { updateStatus('No valid categories defined.', true); return; } // Should be caught by above checks, but safe
-
+                 const columnName = textColumnInput.value; textColumnInput.classList.remove('invalid');
+                 if (!columnName.trim() || columnName.length > MAX_LABEL_LENGTH || !ALLOWED_LABEL_REGEX.test(columnName)) { updateStatus('Please enter a valid column name (max 50 chars, letters/numbers/spaces/_ only).', true); textColumnInput.classList.add('invalid'); formIsValid = false; }
+                 const { categories, isValid: categoriesAreValid } = getCategoriesFromDOM(true); if (categoryListDiv.querySelectorAll('.category-item').length === 0) { updateStatus('Please define at least one category.', true); formIsValid = false; } else if (!categoriesAreValid) { updateStatus('Please fix the errors in category definitions.', true); formIsValid = false; }
+                 if (!formIsValid) return;
+                 const validCategories = categories.filter(cat => cat.label.trim() && cat.label.length <= MAX_LABEL_LENGTH && ALLOWED_LABEL_REGEX.test(cat.label) && cat.description.trim() && cat.description.length <= MAX_DESC_LENGTH ); if(validCategories.length === 0) { updateStatus('No valid categories defined.', true); return; }
                  const formData = new FormData(); formData.append('csv_file', csvFileInput.files[0]); formData.append('text_column', columnName.trim()); formData.append('categories', JSON.stringify(validCategories));
-
-                 // --- UI Updates & Fetch --- (Same as before)
-                 setLoading(true, 'Uploading and processing...'); try { const backendUrl = 'https://classifyit.onrender.com/classify'; const response = await fetch(backendUrl, { method: 'POST', body: formData }); if (response.ok) { updateStatus('Processing complete. Preparing download...', false, 'success-message'); const blob = await response.blob(); if (blob.type.includes('application/json')) { const errorData = await blob.text(); const errorJson = JSON.parse(errorData); throw new Error(errorJson.error || 'Backend JSON error.'); } else if (!blob.type.includes('text/csv') && blob.size > 0) { console.warn("Unexpected blob type:", blob.type); } else if (blob.size === 0) { throw new Error("Empty response from server."); } triggerDownload(blob); updateStatus('Classification successful! Download started.', false, 'success-message', 5000); } else { let errorMsg = `Server error: ${response.status} ${response.statusText}`; try { const errorData = await response.json(); errorMsg = errorData.error || JSON.stringify(errorData); } catch (e) { console.warn("Non-JSON error response."); } throw new Error(errorMsg); } } catch (error) { console.error('Submission Error:', error); updateStatus(`Error: ${error.message}.`, true); } finally { setLoading(false); }
+                 setLoading(true, 'Uploading and processing...'); try { const backendUrl = 'https://text-classifier-backend-darlloyd.onrender.com/classify'; const response = await fetch(backendUrl, { method: 'POST', body: formData }); if (response.ok) { updateStatus('Processing complete. Preparing download...', false, 'success-message'); const blob = await response.blob(); if (blob.type.includes('application/json')) { const errorData = await blob.text(); const errorJson = JSON.parse(errorData); throw new Error(errorJson.error || 'Backend JSON error.'); } else if (!blob.type.includes('text/csv') && blob.size > 0) { console.warn("Unexpected blob type:", blob.type); } else if (blob.size === 0) { throw new Error("Empty response from server."); } triggerDownload(blob); updateStatus('Classification successful! Download started.', false, 'success-message', 5000); } else { let errorMsg = `Server error: ${response.status} ${response.statusText}`; try { const errorData = await response.json(); errorMsg = errorData.error || JSON.stringify(errorData); } catch (e) { console.warn("Non-JSON error response."); } throw new Error(errorMsg); } } catch (error) { console.error('Submission Error:', error); updateStatus(`Error: ${error.message}.`, true); } finally { setLoading(false); }
              }
-
-            // --- Helper Functions ---
-            function triggerDownload(blob) { /* ... (same as before) ... */ const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); a.download = `classified_output_${timestamp}.csv`; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); document.body.removeChild(a); }
-            function setLoading(isLoading, message = 'Status: Ready') { /* ... (same as before) ... */ submitBtn.disabled = isLoading; loadingIndicator.style.display = isLoading ? 'inline' : 'none'; if (isLoading) { updateStatus(message, false); } }
-            function updateStatus(message, isError = false, messageClass = '', clearAfterMs = 0) { /* ... (same as before) ... */ if (statusClearTimeout) { clearTimeout(statusClearTimeout); statusClearTimeout = null; } statusMessage.textContent = message; statusMessage.className = 'status-message'; if (messageClass) { statusMessage.classList.add(messageClass); } else if (isError) { statusMessage.classList.add('error-message'); } if(isError) { submitBtn.disabled = false; } if (!isError && clearAfterMs > 0) { statusClearTimeout = setTimeout(() => { if (statusMessage.textContent === message) { statusMessage.textContent = 'Status: Ready'; statusMessage.className = 'status-message'; } statusClearTimeout = null; }, clearAfterMs); } }
-            function escapeHtml(unsafe) { /* ... (same as before) ... */ if (typeof unsafe !== 'string') return unsafe; return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-
-            // --- Initial Load ---
-            loadCategories(); // Load categories
-            handleColumnInput(); // Initialize column counter
-
+            function triggerDownload(blob) { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); a.download = `classified_output_${timestamp}.csv`; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); document.body.removeChild(a); }
+            function setLoading(isLoading, message = 'Status: Ready') { submitBtn.disabled = isLoading; loadingIndicator.style.display = isLoading ? 'inline' : 'none'; if (isLoading) { updateStatus(message, false); } }
+            function updateStatus(message, isError = false, messageClass = '', clearAfterMs = 0) { if (statusClearTimeout) { clearTimeout(statusClearTimeout); statusClearTimeout = null; } statusMessage.textContent = message; statusMessage.className = 'status-message'; if (messageClass) { statusMessage.classList.add(messageClass); } else if (isError) { statusMessage.classList.add('error-message'); } if(isError) { submitBtn.disabled = false; } if (!isError && clearAfterMs > 0) { statusClearTimeout = setTimeout(() => { if (statusMessage.textContent === message) { statusMessage.textContent = 'Status: Ready'; statusMessage.className = 'status-message'; } statusClearTimeout = null; }, clearAfterMs); } }
+            function escapeHtml(unsafe) { if (typeof unsafe !== 'string') return unsafe; return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+            loadCategories(); handleColumnInput(); // Initial Load & Init Column Counter
         }); // End DOMContentLoaded
     </script>
 
