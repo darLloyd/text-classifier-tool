@@ -6,92 +6,182 @@
     <title>Classifyit - Text Classification Tool</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* --- Theme 3: Professional Corporate --- */
         :root {
-            --primary-color: #007bff; --primary-hover: #0056b3; --secondary-color: #6c757d; --secondary-hover: #5a6268;
-            --danger-color: #dc3545; --danger-hover: #c82333; --success-color: #28a745; --success-hover: #218838;
-            --info-color: #17a2b8; --info-hover: #138496; --warning-color: #ffc107; --warning-dark: #d39e00;
-            --light-gray: #f8f9fa; --medium-gray: #dee2e6; --dark-gray: #6c757d; --text-color: #212529;
-            --border-radius: 6px; --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --primary-color: #0056b3; /* Corporate Blue */
+            --primary-hover: #004494;
+            --secondary-color: #6c757d; /* Medium Gray */
+            --secondary-hover: #5a6268;
+            --danger-color: #c82333; /* Darker Red for danger */
+            --danger-hover: #a31f2b;
+            --success-color: #1e7e34; /* Corporate Green */
+            --success-hover: #155d27;
+            --info-color: #117a8b; /* Tealish Blue */
+            --info-hover: #0e616f;
+            --warning-color: #ffc107;
+            --warning-dark: #d39e00;
+
+            --body-bg: #f8f9fa; /* Light Gray Background */
+            --container-bg: #ffffff;
+            --section-border: #dee2e6; /* Light border for sections */
+            --input-border: #ced4da; /* Standard input border */
+            --input-focus-border: #0056b3;
+            --input-focus-shadow: rgba(0, 86, 179, 0.25);
+            --text-color: #212529; /* Standard dark text */
+            --heading-color: #003875; /* Darker blue for main headings */
+            --subtle-text-color: #495057; /* For less important text */
+            --border-radius: 4px; /* Slightly less rounded for corporate feel */
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        body { font-family: 'Inter', sans-serif; background-color: #eef2f7; color: var(--text-color); margin: 0; padding: 20px; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
-        .container { max-width: 800px; margin: 20px auto; background-color: #ffffff; padding: 30px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); flex-grow: 1; }
+
+        body {
+            font-family: 'Noto Sans', 'Inter', sans-serif; /* Noto Sans as primary */
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--section-border);
+            flex-grow: 1;
+        }
         
-        /* Updated Title Styling with Poppins */
         .main-title-container {
             text-align: center;
             margin-bottom: 1.5em;
         }
         .main-title {
-            font-family: 'Poppins', sans-serif; /* Changed font */
-            font-weight: 600; /* Added font weight for Poppins */
-            font-size: 2.8em;
-            color: var(--primary-color);
+            font-family: 'Noto Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2.5em;
+            color: var(--heading-color);
             margin-bottom: 0.1em;
             line-height: 1.1;
         }
         .sub-title {
             font-size: 1em;
-            font-style: italic;
-            color: var(--dark-gray);
-            margin-top: 0;
+            font-style: normal;
+            color: var(--subtle-text-color);
+            margin-top: 0.2em;
         }
 
-        h2 { font-size: 1.5em; color: var(--text-color); display: flex; align-items: center; margin-bottom: 0.75em; border-bottom: 1px solid var(--medium-gray); padding-bottom: 0.5em;}
-        section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--light-gray); }
+        h2 { 
+            /* ** UPDATED: Slightly smaller font size for section headings ** */
+            font-size: 1.25em; 
+            color: var(--heading-color); 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 0.75em; 
+            border-bottom: 1px solid var(--section-border); 
+            padding-bottom: 0.5em;
+            font-weight: 700;
+        }
+        section { 
+            margin-bottom: 30px; 
+            padding-bottom: 20px; 
+            border-bottom: 1px solid #e9ecef;
+        }
         section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark-gray); }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: var(--subtle-text-color); }
         .label-with-info { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
         .label-with-info label { margin-bottom: 0; }
 
-        input[type="text"], textarea { width: 100%; padding: 10px 12px; margin-bottom: 5px; border: 1px solid var(--medium-gray); border-radius: var(--border-radius); box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+        input[type="text"], textarea { 
+            width: 100%; padding: 10px 12px; margin-bottom: 5px; 
+            border: 1px solid var(--input-border); 
+            border-radius: var(--border-radius); 
+            box-sizing: border-box; font-family: 'Noto Sans', sans-serif; font-size: 0.95rem;
+            background-color: #fff;
+            color: var(--text-color);
+        }
         textarea { min-height: 70px; resize: vertical; }
-        input[type="text"]:focus, textarea:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); }
-        input.invalid, textarea.invalid { border-color: var(--danger-color); box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25); }
-        .char-counter { font-size: 0.8rem; color: var(--dark-gray); text-align: right; display: block; margin-bottom: 10px; height: 1em; }
-        .char-counter.warning { color: var(--warning-dark); font-weight: 500; }
-        button { padding: 10px 18px; border: none; border-radius: var(--border-radius); cursor: pointer; font-family: inherit; font-size: 1rem; font-weight: 500; transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease; margin-right: 8px; margin-bottom: 5px; vertical-align: middle; }
-        button:hover { opacity: 0.9; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
-        button:disabled { background-color: var(--medium-gray) !important; color: var(--dark-gray) !important; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
-        #submit-btn { background-color: var(--primary-color); color: white; font-weight: 700; min-width: 180px; }
-        #submit-btn:hover:not(:disabled) { background-color: var(--primary-hover); }
-        #add-category-btn { background-color: var(--success-color); color: white; }
-        #add-category-btn:hover:not(:disabled) { background-color: var(--success-hover); }
-        .remove-category-btn { background-color: var(--danger-color); color: white; padding: 6px 12px; font-size: 0.9rem; margin-left: auto; margin-right: 0; align-self: center; }
-        .remove-category-btn:hover:not(:disabled) { background-color: var(--danger-hover); }
-        #save-categories-btn, #load-categories-btn { background-color: var(--secondary-color); color: white; font-size: 0.9rem; padding: 8px 15px; }
-        #save-categories-btn:hover:not(:disabled), #load-categories-btn:hover:not(:disabled) { background-color: var(--secondary-hover); }
-        #cancel-btn { background-color: var(--danger-color); color: white; margin-left: 10px; display: none; }
-        #cancel-btn:hover:not(:disabled) { background-color: var(--danger-hover); }
+        input[type="text"]:focus, textarea:focus { 
+            border-color: var(--input-focus-border); 
+            outline: none; 
+            box-shadow: 0 0 0 0.2rem var(--input-focus-shadow);
+        }
+        input.invalid, textarea.invalid { border-color: var(--danger-color); box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
+        .char-counter { font-size: 0.8rem; color: var(--subtle-text-color); text-align: right; display: block; margin-bottom: 10px; height: 1em; }
+        .char-counter.warning { color: var(--warning-dark); font-weight: bold; }
+        
+        button { 
+            padding: 9px 15px; 
+            border: 1px solid transparent; 
+            border-radius: var(--border-radius); 
+            cursor: pointer; font-family: 'Noto Sans', sans-serif; font-size: 0.95rem; font-weight: 700; 
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; 
+            margin-right: 8px; margin-bottom: 5px; vertical-align: middle; 
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { background-color: #e9ecef !important; color: #6c757d !important; border-color: #ced4da !important; cursor: not-allowed; opacity: 0.65; box-shadow: none; }
+        
+        #submit-btn { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        #submit-btn:hover:not(:disabled) { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+        
+        #add-category-btn { background-color: var(--success-color); color: white; border-color: var(--success-color); }
+        #add-category-btn:hover:not(:disabled) { background-color: var(--success-hover); border-color: var(--success-hover); }
+        
+        .remove-category-btn { background-color: var(--danger-color); color: white; border-color: var(--danger-color); padding: 5px 10px; font-size: 0.85rem; margin-left: auto; margin-right: 0; align-self: center; }
+        .remove-category-btn:hover:not(:disabled) { background-color: var(--danger-hover); border-color: var(--danger-hover); }
+        
+        #save-categories-btn, #load-categories-btn { background-color: var(--secondary-color); color: white; border-color: var(--secondary-color); font-size: 0.9rem; padding: 7px 13px; }
+        #save-categories-btn:hover:not(:disabled), #load-categories-btn:hover:not(:disabled) { background-color: var(--secondary-hover); border-color: var(--secondary-hover); }
+        
+        #cancel-btn { background-color: var(--danger-color); color: white; border-color: var(--danger-color); margin-left: 10px; display: none; }
+        #cancel-btn:hover:not(:disabled) { background-color: var(--danger-hover); border-color: var(--danger-hover); }
+        
         .file-input-group { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-bottom: 15px; }
         .file-input-wrapper, .text-column-wrapper { flex: 1; min-width: 250px; }
         input[type="file"] { display: none; }
-        .custom-file-upload { border: 1px solid var(--primary-color); display: inline-block; padding: 8px 15px; cursor: pointer; background-color: white; color: var(--primary-color); border-radius: var(--border-radius); transition: background-color 0.2s ease, color 0.2s ease; font-weight: 500; margin-right: 10px; }
+        .custom-file-upload { 
+            border: 1px solid var(--primary-color); 
+            display: inline-block; padding: 8px 15px; cursor: pointer; 
+            background-color: var(--container-bg); color: var(--primary-color); 
+            border-radius: var(--border-radius); transition: background-color 0.2s ease, color 0.2s ease; 
+            font-weight: 700; margin-right: 10px; 
+        }
         .custom-file-upload:hover { background-color: var(--primary-color); color: white; }
-        #file-name-display { color: var(--dark-gray); font-size: 0.9rem; margin-top: 5px; display: inline-block; margin-right: 5px;}
+        #file-name-display { color: var(--subtle-text-color); font-size: 0.9rem; margin-top: 5px; display: inline-block; margin-right: 5px;}
         #clear-file-btn { background: none; border: none; color: var(--danger-color); cursor: pointer; font-size: 1.2rem; padding: 0 5px; vertical-align: middle; display: none; }
         #clear-file-btn:hover { color: var(--danger-hover); }
-        .category-controls { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--light-gray); }
+        
+        .category-controls { margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef; }
         #category-list { margin-top: 15px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .category-item { display: flex; align-items: flex-start; gap: 15px; padding: 15px; border: 1px solid var(--medium-gray); border-radius: var(--border-radius); background-color: var(--light-gray); }
+        .category-item { display: flex; align-items: flex-start; gap: 15px; padding: 15px; border: 1px solid var(--section-border); border-radius: var(--border-radius); background-color: #f8f9fa; }
         .category-item .input-group { flex-grow: 1; }
         .category-item textarea.category-description { margin-bottom: 0; }
-        #status-area { margin-top: 20px; padding: 15px; background-color: var(--light-gray); border-radius: var(--border-radius); border: 1px solid var(--medium-gray); min-height: 50px; display: flex; align-items: center; flex-wrap: wrap; }
-        #status-message { margin: 0 15px 0 0; color: var(--dark-gray); font-weight: 500; flex-grow: 1; }
+        
+        #status-area { margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: var(--border-radius); border: 1px solid var(--section-border); min-height: 50px; display: flex; align-items: center; flex-wrap: wrap; }
+        #status-message { margin: 0 15px 0 0; color: var(--subtle-text-color); font-weight: 500; flex-grow: 1; }
         #loading-indicator { margin-left: auto; }
         #status-area .error-message { color: var(--danger-color); font-weight: 700; }
-        #status-area .success-message { color: var(--success-color); font-weight: 500; }
+        #status-area .success-message { color: var(--success-color); font-weight: 700; }
         #status-area .info-message { color: var(--info-color); font-weight: 500; }
         #status-area .warning-message { color: var(--warning-dark); font-weight: 500; }
+        
         .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 24px; height: 24px; border-radius: 50%; border-left-color: var(--primary-color); animation: spin 1s ease infinite; display: none; margin-left: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        footer { text-align: center; margin-top: 30px; padding: 15px; font-size: 0.9rem; color: var(--dark-gray); }
+        
+        footer { text-align: center; margin-top: 30px; padding: 15px; font-size: 0.9rem; color: var(--subtle-text-color); border-top: 1px solid var(--section-border); }
         footer a { color: var(--primary-color); text-decoration: none; }
         footer a:hover { text-decoration: underline; }
+        
         .info-icon { display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: var(--secondary-color); color: white; font-size: 0.8em; font-weight: bold; cursor: pointer; margin-left: 8px; user-select: none; }
         .info-icon:hover { background-color: var(--secondary-hover); }
+        
         .tooltip-popup { position: absolute; background-color: #333; color: white; padding: 8px 12px; border-radius: var(--border-radius); box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000; font-size: 0.85rem; max-width: 250px; display: none; }
         .submission-controls { display: flex; align-items: center; }
     </style>
@@ -130,7 +220,7 @@
 
             <section id="category-definition-section">
                  <h2>
-                     Define Categories (Max 10)
+                     2. Define Categories (Max 10)
                      <span class="info-icon" data-tooltip="For Category Label - Enter a short, unique label (max 50 chars, letters/numbers/spaces/_ only). For Description - Describe what this category means (max 300 chars).">?</span>
                  </h2>
                  <div id="category-list">
@@ -169,7 +259,6 @@
 
     <script>
         // --- JavaScript (Identical to enhanced_frontend_v14_info_icons) ---
-        // No changes needed in JS for this font update
         document.addEventListener('DOMContentLoaded', () => {
             const MAX_CATEGORIES = 10; const MAX_LABEL_LENGTH = 50; const MAX_DESC_LENGTH = 300;
             const CATEGORIES_STORAGE_KEY = 'textClassifierUserCategories';
