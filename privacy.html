@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Statement - Classifyit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Reusing a simplified version of the main page's styles for consistency */
+        :root {
+            --primary-color: #0056b3;
+            --body-bg: #f8f9fa;
+            --container-bg: #ffffff;
+            --section-border: #dee2e6;
+            --text-color: #212529;
+            --heading-color: #003875;
+            --border-radius: 4px;
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: 'Noto Sans', 'Inter', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: var(--container-bg);
+            padding: 30px 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--section-border);
+        }
+        h1 {
+            color: var(--heading-color);
+            border-bottom: 1px solid var(--section-border);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: var(--heading-color);
+            margin-top: 30px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        .go-back-link {
+            display: inline-block;
+            margin-top: 30px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .go-back-link:hover {
+            text-decoration: underline;
+        }
+        .disclaimer {
+            font-size: 0.9em;
+            font-style: italic;
+            color: #6c757d;
+            border-top: 1px solid var(--section-border);
+            padding-top: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Privacy Statement for Classifyit</h1>
+
+        <p>Your privacy is important to us. This statement explains how your data is handled when you use the Classifyit tool.</p>
+
+        <h3>Data Handling</h3>
+        <ul>
+            <li><strong>No Data Storage:</strong> We do not store, save, or log any content from your uploaded files on our servers. The files you upload are processed in memory for the duration of the classification task and are discarded immediately after the process is complete.</li>
+            <li><strong>Category Definitions:</strong> The "Save Categories" feature stores your category labels and descriptions directly in your own browser's `localStorage`. This data is never sent to our servers or seen by us.</li>
+        </ul>
+
+        <h3>Third-Party Services (OpenAI)</h3>
+        <ul>
+            <li>To perform the text classification, the text from your specified column is sent to the OpenAI API.</li>
+            <li>We do not send your file name or any other data from your file besides the text in the column you specify.</li>
+            <li>Your use of this tool is also subject to OpenAI's data usage policies. We encourage you to review them for a complete understanding of how they handle data.</li>
+        </ul>
+
+        <h3>Data Privacy Principles</h3>
+        <p>We are committed to principles of data privacy and data minimization. This tool is designed to adhere to the spirit of privacy regulations such as the EU's General Data Protection Regulation (GDPR) by not persisting any personal or file data on our systems.</p>
+
+        <p class="disclaimer">
+            This statement is for informational purposes only and does not constitute legal advice.
+        </p>
+
+        <a href="index.html" class="go-back-link">&larr; Go Back to the Tool</a>
+    </div>
+
+</body>
+</html>
